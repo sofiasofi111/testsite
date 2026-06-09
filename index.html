@@ -1,0 +1,1014 @@
+﻿<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Планер навчання</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container-app">
+        
+        <!-- # шапка: баннер, кнопки, меню -->
+        <header>
+            <div id="profileBanner" class="profile-banner">
+                <div class="profile-cover">
+                    <div id="profileAvatar" class="profile-avatar"></div>
+                    <div class="profile-text">
+                        <h1>Планер навчання</h1>
+                        <p id="profileSubtitle">Увійдіть, щоб додати аватар і фон профілю.</p>
+                    </div>
+                    <div class="profile-actions">
+                        <button class="auth-btn" type="button" onclick="chooseAvatar()">Змінити аватар</button>
+                        <button class="auth-btn" type="button" onclick="chooseBanner()">Змінити фон</button>
+                        <button class="clear-btn" type="button" onclick="clearAvatar()">Видалити аватар</button>
+                        <button class="clear-btn" type="button" onclick="clearBanner()">Видалити фон</button>
+                    </div>
+                </div>
+            </div>
+            <div class="header-top">
+                <div></div>
+                <div class="header-controls">
+                    <button class="auth-btn login-btn" onclick="location.href='auth.html?action=login'">Увійти</button>
+                    
+                    <button class="auth-btn register-btn" onclick="location.href='auth.html?action=register'">Зареєструватись</button>
+                    <button class="theme-toggle" onclick="toggleTheme()" title="Перемкнути тему">🌙</button>
+                    <span id="userInfo" class="user-info" style="display:none">Привіт, <strong id="currentUserName"></strong> <button class="auth-btn" onclick="logoutUser()">Вийти</button></span>
+                </div>
+            </div>
+        </header>
+
+        <!-- # скрытые input для загрузки аватара и фона (off-screen, чтобы диалог точно открывался) -->
+        <input type="file" id="avatarInput" accept="image/*" style="position:absolute;left:-9999px;" onchange="handleFileSelect(event, 'avatar')">
+        <input type="file" id="bannerInput" accept="image/*" style="position:absolute;left:-9999px;" onchange="handleFileSelect(event, 'banner')">
+
+        <!-- # статистика: всього дз, зроблено, процент -->
+        <div class="stats-section">
+            <div class="stat-card">
+                <span class="stat-label">Всього дз</span>
+                <span class="stat-value" id="totalTasks">0</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Зроблено</span>
+                <span class="stat-value" id="completedTasks">0</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Процент</span>
+                <span class="stat-value" id="completionPercent">0%</span>
+            </div>
+        </div>
+
+        <!-- # основная частина: предмети і завдання -->
+        <main>
+            <div class="sidebar">
+                <h2>Предмети</h2>
+                
+                <div class="add-subject">
+                    <input type="text" id="newSubject" placeholder="Новий предмет" />
+                    <button onclick="addSubject()">➕</button>
+                </div>
+
+                <ul id="subjectList" class="subject-list">
+                    <li class="subject-item active" onclick="selectSubject(this, 'Алгебра')">
+                        <span>Алгебра</span>
+                    </li>
+                    <li class="subject-item" onclick="selectSubject(this, 'Укр мова')">
+                        <span>Укр мова</span>
+                    </li>
+                    <li class="subject-item" onclick="selectSubject(this, 'Англ мова')">
+                        <span>Англ мова</span>
+                    </li>
+                    <li class="subject-item" onclick="selectSubject(this, 'Фізика')">
+                        <span>Фізика</span>
+                    </li>
+                    <li class="subject-item" onclick="selectSubject(this, 'Хімія')">
+                        <span>Хімія</span>
+                    </li>
+                    <li class="subject-item" onclick="selectSubject(this, 'Інформатика')">
+                        <span>Інформатика</span>
+                    </li>
+                    <li class="subject-item" onclick="selectSubject(this, 'Фізкультура')">
+                        <span>Фізкультура</span>
+                    </li>
+                    <li class="subject-item" onclick="selectSubject(this, 'Економіка')">
+                        <span>Економіка</span>
+                    </li>
+                    <li class="subject-item" onclick="selectSubject(this, 'Географія')">
+                        <span>География</span>
+                    </li>
+                    <li class="subject-item" onclick="selectSubject(this, 'Зарубежка')">
+                        <span>Зарубіжна література</span>
+                    </li>
+                    <li class="subject-item" onclick="selectSubject(this, 'Біологія')">
+                        <span>Біологія</span>
+                    </li>
+                    <li class="subject-item" onclick="selectSubject(this, 'Правознавство')">
+                        <span>Правознавство</span>
+                    </li>
+                    <li class="subject-item" onclick="selectSubject(this, 'Мистецтво')">
+                        <span>Мистецтво</span>
+                    </li>
+                    <li class="subject-item" onclick="selectSubject(this, 'ОДД')">
+                        <span>ОДД</span>
+                    </li>
+                    <li class="subject-item" onclick="selectSubject(this, 'Укр література')">
+                        <span>Укр література</span>
+                    </li>
+                    <li class="subject-item" onclick="selectSubject(this, 'Технологія')">
+                        <span>Технологія</span>
+                    </li>
+                    <li class="subject-item" onclick="selectSubject(this, 'Основи податків')">
+                        <span>Основи податків</span>
+                    </li>
+                    <li class="subject-item" onclick="selectSubject(this, 'Основи здороввя')">
+                        <span>Основи здороввя</span>
+                    </li>
+                    <li class="subject-item" onclick="selectSubject(this, 'Геометрія')">
+                        <span>Геометрія</span>
+                    </li>
+                    <li class="subject-item" onclick="selectSubject(this, 'Історія')">
+                        <span>Історія</span>
+                    </li>
+                    <li class="subject-item" onclick="selectSubject(this, 'STEM')">
+                        <span>STEM</span>
+                    </li>
+                    <li class="subject-item" onclick="selectSubject(this, 'Зарубережна література')">
+                        <span>Зарубіжна література</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="content">
+                <div class="subject-header">
+                    <h2 id="currentSubject"> Алгебра</h2>
+                    <button id="deleteSubjectBtn" class="delete-btn" onclick="deleteCurrentSubject()" style="display: none;">Видалити</button>
+                </div>
+
+                <div class="filter-section">
+                    <input type="text" id="searchInput" placeholder="Пошук ДЗ..." onkeyup="filterTasks()">
+                    <select id="filterSelect" onchange="filterTasks()">
+                        <option value="all">Усі</option>
+                        <option value="active">Активні</option>
+                        <option value="completed">Виконані</option>
+                        <option value="high">Високий пріоритет</option>
+                    </select>
+                </div>
+
+                <div class="task-input-section">
+                    <h3>Додати домашнє завдання</h3>
+                    <div class="input-group">
+                        <input type="text" id="taskInput" placeholder="Введіть завдання..." />
+                        <input type="date" id="taskDate" />
+                    </div>
+                    <div class="task-options">
+                        <div class="option-card">
+                            <label for="prioritySelect">Пріоритет</label>
+                            <select id="prioritySelect">
+                                <option value="low">Низький</option>
+                                <option value="medium" selected>Середній</option>
+                                <option value="high">Високий</option>
+                            </select>
+                        </div>
+                        <div class="option-card">
+                            <label for="difficultySelect">Складність</label>
+                            <select id="difficultySelect">
+                                <option value="1">Легко</option>
+                                <option value="2" selected>Середньо</option>
+                                <option value="3">Складно</option>
+                                <option value="4">Дуже складно</option>
+                                <option value="5">Екстра</option>
+                            </select>
+                        </div>
+                        <button class="task-add-button" onclick="openTaskModal()">Додати</button>
+                    </div>
+                    <textarea id="taskNotes" placeholder="Нотатки..." style="width: 100%; min-height: 60px; margin-top: 10px;"></textarea>
+                </div>
+
+                <div class="tasks-section">
+                    <div class="tabs">
+                        <button class="tab active" data-tab="active" onclick="switchTab('active')">Активні</button>
+                        <button class="tab" data-tab="completed" onclick="switchTab('completed')">Виконані</button>
+                        <button class="tab" data-tab="subjects" onclick="switchTab('subjects')">Предмети</button>
+                        <button class="tab" data-tab="calendar" onclick="switchTab('calendar')">Календар</button>
+                    </div>
+
+                    <div id="activeTab" class="tab-content active">
+                        <ul id="taskList" class="task-list"></ul>
+                        <div id="emptyMessage" class="empty-message">
+                            <p>Немає активних завдань 😌</p>
+                        </div>
+                    </div>
+
+                    <div id="completedTab" class="tab-content">
+                        <ul id="completedList" class="task-list"></ul>
+                        <div id="emptyCompletedMessage" class="empty-message">
+                            <p>Немає завершених завдань</p>
+                        </div>
+                    </div>
+
+                    <div id="subjectsTab" class="tab-content">
+                        <div class="subject-summary-panel">
+                            <h4>Предмети з записами</h4>
+                            <ul id="subjectsWithTasksList" class="subject-summary-list"></ul>
+                            <div id="noSubjectsWithTasks" class="empty-message">
+                                <p>Поки немає предметів із завданнями.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="calendarTab" class="tab-content">
+                        <div id="calendar" class="calendar-widget"></div>
+                        <div class="calendar-selected-tasks">Немає завдань на цей день</div>
+                        <div class="calendar-note-panel">
+                            <h4>Нотатка на день</h4>
+                            <textarea id="calendarNoteInput" placeholder="Напиши нотатку для вибраного дня..."></textarea>
+                            <div class="calendar-note-actions">
+                                <button class="auth-btn" type="button" onclick="saveCalendarNote()">Зберегти нотатку</button>
+                            </div>
+                            <div id="calendarNoteText" class="calendar-note-text">На цей день поки немає нотаток.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- # js: логика, сохранение, показ данных -->
+    <script>
+        // # состояния и переменные
+        // # subjects = предмети і завдання
+        let subjects = {};
+        // # currentSubject = поточний предмет
+        let currentSubject = 'Алгебра';
+        let currentFilter = 'all';
+        let currentTab = 'active';
+        let isDarkTheme = localStorage.getItem('darkTheme') === 'true';
+        let calendarMonth = null; // текущий месяц (0-11) 
+        let calendarYear = null; // текущий год (например, 2024)
+        let selectedDate = null; // выбранная дата YYYY-MM-DD
+        let calendarNotes = {}; // заметки для дней
+
+        // # инициализация страницы: загрузка данных, рендер и установка календаря
+        function init() {
+            if (isDarkTheme) document.body.classList.add('dark-theme');
+            loadFromStorage();  
+            loadCalendarNotes();
+            normalizeAllNotes();
+            renderSubjects();
+            loadUserProfile();
+            renderTasks();
+            updateStats();
+            setDefaultCalendar();
+        }
+
+        // установка текущего месяца/года календаря по умолчанию
+        function setDefaultCalendar() {
+            const today = new Date();
+            calendarMonth = today.getMonth();
+            calendarYear = today.getFullYear();
+            selectedDate = today.toISOString().split('T')[0];
+        }
+
+        // формирование ключа localStorage для заметок календаря текущего пользователя
+        function getCalendarNotesKey() {
+            return currentUserKey ? 'plannerCalendarNotes_' + currentUserKey : 'plannerCalendarNotes';
+        }
+
+        // загрузка заметок календаря из localStorage
+        function loadCalendarNotes() {
+            const stored = localStorage.getItem(getCalendarNotesKey());
+            try {
+                calendarNotes = stored ? JSON.parse(stored) : {};
+            } catch (error) {
+                calendarNotes = {};
+            }
+        }
+
+        // сохранение заметок календаря в localStorage
+        function saveCalendarNotes() {
+            localStorage.setItem(getCalendarNotesKey(), JSON.stringify(calendarNotes));
+        }
+
+        // обновление панели заметки для выбранного дня календаря
+        function updateCalendarNotePanel() {
+            const noteInput = document.getElementById('calendarNoteInput');
+            const noteView = document.getElementById('calendarNoteText');
+            const selected = selectedDate || new Date().toISOString().split('T')[0];
+            const note = calendarNotes[selected] || '';
+            if (noteInput) noteInput.value = note;
+            if (noteView) noteView.textContent = note ? note : 'На цей день поки немає нотаток.';
+        }
+
+        // сохранение заметки для текущей выбранной даты календаря
+        function saveCalendarNote() {
+            const noteInput = document.getElementById('calendarNoteInput');
+            const selected = selectedDate || new Date().toISOString().split('T')[0];
+            if (!noteInput) return;
+            const text = noteInput.value.trim();
+            if (text) {
+                calendarNotes[selected] = text;
+            } else {
+                delete calendarNotes[selected];
+            }
+            saveCalendarNotes();
+            updateCalendarNotePanel();
+            renderCalendar();
+        }
+
+        // переключение темы оформления и сохранение выбора
+        function toggleTheme() {
+            isDarkTheme = !isDarkTheme;
+            document.body.classList.toggle('dark-theme');
+            localStorage.setItem('darkTheme', isDarkTheme);
+        }
+
+        // # текущий пользователь или null
+        let currentUser = localStorage.getItem('plannerCurrentUser') || null;
+        let currentUserKey = currentUser ? currentUser.toLowerCase() : null;
+
+        // получение списка пользователей из localStorage
+        function getUsers() {
+            const stored = localStorage.getItem('plannerUsers');
+            try {
+                return stored ? JSON.parse(stored) : {};
+            } catch (error) {
+                return {};
+            }
+        }
+
+        // сохранение списка пользователей в localStorage
+        function saveUsers(users) {
+            localStorage.setItem('plannerUsers', JSON.stringify(users));
+        }
+
+        // загрузка и отображение данных профиля пользователя
+        function loadUserProfile() {
+            const banner = document.getElementById('profileBanner');
+            const avatar = document.getElementById('profileAvatar');
+            const subtitle = document.getElementById('profileSubtitle');
+            if (!banner || !avatar || !subtitle) return;
+
+            const defaultBanner = isDarkTheme ?
+                'linear-gradient(135deg, #111827 0%, #1f2937 100%)' :
+                'linear-gradient(135deg, #e2e8f0 0%, #ffffff 100%)';
+
+            if (!currentUser) {
+                banner.style.backgroundImage = defaultBanner;
+                avatar.style.backgroundImage = 'none';
+                avatar.textContent = 'A';
+                subtitle.textContent = 'Увійдіть, щоб додати аватар і фон профілю.';
+                return;
+            }
+
+            const users = getUsers();
+            const normalizedKey = currentUser ? currentUser.toLowerCase() : null;
+            let user = normalizedKey ? users[normalizedKey] : null;
+            if (!user) {
+                user = Object.values(users).find(u => u.username && u.username.toLowerCase() === normalizedKey);
+            }
+            if (!user) return;
+
+            if (user.banner) {
+                banner.style.backgroundImage = `url('${user.banner}')`;
+            } else {
+                banner.style.backgroundImage = 'linear-gradient(135deg, #e2e8f0 0%, #ffffff 100%)';
+            }
+
+            if (user.avatar) {
+                avatar.style.backgroundImage = `url('${user.avatar}')`;
+                avatar.textContent = '';
+            } else {
+                avatar.style.backgroundImage = 'none';
+                avatar.textContent = user.username ? user.username[0].toUpperCase() : 'A';
+            }
+
+            subtitle.textContent = 'Змінюй свій профіль.';
+        }
+
+        // открывает выбор файла для аватара
+        function chooseAvatar() {
+            if (!currentUser) {
+                alert('Увійдіть, щоб додати аватар.');
+                return;
+            }
+            const input = document.getElementById('avatarInput');
+            if (!input) return;
+            // убедиться, что значение очищено, чтобы событие 'change' срабатывало даже для одного файла
+            input.value = '';
+            try { input.click(); } catch (e) { /* ignore */ }
+        }
+
+        // открывает выбор файла для баннера
+        function chooseBanner() {
+            if (!currentUser) {
+                alert('Увійдіть, щоб додати фон.');
+                return;
+            }
+            const input = document.getElementById('bannerInput');
+            if (!input) return;
+            input.value = '';
+            try { input.click(); } catch (e) { /* ignore */ }
+        }
+
+        // обработка выбора файла аватара или баннера и чтение его в base64
+        function handleFileSelect(event, type) {
+            const input = event.target;
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                updateUserProfile(type, reader.result);
+                // очистить значение, чтобы повторный выбор того же файла снова вызывал событие change
+                try { input.value = ''; } catch (e) {}
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // обнова данных профиля пользователя (аватар или баннер)
+        function updateUserProfile(type, dataUrl) {
+            const users = getUsers();
+            const normalizedUser = currentUser.toLowerCase();
+            if (!users[normalizedUser]) return;
+            if (type === 'avatar') {
+                users[normalizedUser].avatar = dataUrl;
+            } else if (type === 'banner') {
+                users[normalizedUser].banner = dataUrl;
+            }
+            saveUsers(users);
+            loadUserProfile();
+        }
+
+        // очистка аватара пользователя
+        function clearAvatar() {
+            if (!currentUser) return;
+            const users = getUsers();
+            const normalizedUser = currentUser.toLowerCase();
+            if (!users[normalizedUser]) return;
+            users[normalizedUser].avatar = null;
+            saveUsers(users);
+            loadUserProfile();
+        }
+
+        // очистка баннера пользователя
+        function clearBanner() {
+            if (!currentUser) return;
+            const users = getUsers();
+            const normalizedUser = currentUser.toLowerCase();
+            if (!users[normalizedUser]) return;
+            users[normalizedUser].banner = null;
+            saveUsers(users);
+            loadUserProfile();
+        }
+
+        updateAuthUI();
+
+        
+        
+
+        // выход пользователя из системы и сброс состояния
+        function logoutUser() {
+            currentUser = null;
+            currentUserKey = null;
+            subjects = {};
+            localStorage.removeItem('plannerCurrentUser');
+            updateAuthUI();
+            loadFromStorage();
+            renderSubjects();
+            renderTasks();
+            updateStats();
+            showNotification('Ви вийшли');
+        }
+
+        // обнова интерфейса авторизации в зависимости от состояния пользователя
+        function updateAuthUI() {
+            const userInfo = document.getElementById('userInfo');
+            const userNameEl = document.getElementById('currentUserName');
+            const loginBtns = document.querySelectorAll('.login-btn, .register-btn');
+            if (currentUser) {
+                loginBtns.forEach(b => b.style.display = 'none');
+                userInfo.style.display = 'inline-flex';
+                userNameEl.textContent = currentUser;
+            } else {
+                loginBtns.forEach(b => b.style.display = 'inline-block');
+                userInfo.style.display = 'none';
+                userNameEl.textContent = '';
+            }
+            loadUserProfile();
+        }
+
+        // переключение видимости боковой панели на телефоне
+        function toggleSidebar() {
+            const sb = document.querySelector('.sidebar');
+            if (!sb) return;
+            sb.classList.toggle('open');
+            const ov = document.getElementById('overlay');
+            if (sb.classList.contains('open')) ov.classList.add('open'); else ov.classList.remove('open');
+        }
+
+        function closeSidebar(){
+            const sb = document.querySelector('.sidebar');
+            const ov = document.getElementById('overlay');
+            if(sb) sb.classList.remove('open');
+            if(ov) ov.classList.remove('open');
+        }
+
+        updateAuthUI();
+
+        
+
+        // добавление нового предмета в список
+        function addSubject() {
+            const input = document.getElementById('newSubject');
+            const subjectName = input.value.trim();
+            
+            if (!subjectName) {
+                alert('Введите название предмета');
+                return;
+            }
+            if (subjects[subjectName]) {
+                alert('Такой предмет уже существует');
+                return;
+            }
+
+            subjects[subjectName] = [];
+            input.value = '';
+            renderSubjects();
+            saveToStorage();
+        }
+
+        // рендер списка предметов в боковом меню
+        function renderSubjects() {
+            const subjectList = document.getElementById('subjectList');
+            const subjectNames = Object.keys(subjects);
+            
+            subjectList.innerHTML = '';
+            subjectNames.forEach(name => {
+                const li = document.createElement('li');
+                li.className = 'subject-item';
+                if (name === currentSubject) li.classList.add('active');
+                li.onclick = function() { selectSubject(this, name); };
+                li.innerHTML = `<span>${name}</span>`;
+                subjectList.appendChild(li);
+            });
+        }
+
+        // выбор предмета и переключение на задачи этого предмета
+        function selectSubject(element, subjectName) {
+            document.querySelectorAll('.subject-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            element.classList.add('active');
+            
+            currentSubject = subjectName;
+            document.getElementById('currentSubject').textContent = subjectName;
+            
+            const deleteBtn = document.getElementById('deleteSubjectBtn');
+            deleteBtn.style.display = 'block';
+            
+            currentFilter = 'all';
+            document.getElementById('filterSelect').value = 'all';
+            document.getElementById('searchInput').value = '';
+            
+            
+            currentTab = 'active';
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelector('.tab').classList.add('active');
+            document.getElementById('activeTab').classList.add('active');
+            
+            renderTasks();
+        }
+
+        // удаление текущего предмета и всех его заданий
+        function deleteCurrentSubject() {
+            if (confirm('Видалити предмет і всі його завдання?')) {
+                delete subjects[currentSubject];
+                currentSubject = 'Алгебра';
+                renderSubjects();
+                selectSubject(document.querySelector('.subject-item') || document.querySelector('.subject-item.active'), 'Алгебра');
+                saveToStorage();
+            }
+        }
+
+        // добавление новой задачи в текущий предмет
+        function openTaskModal() {
+            const taskInput = document.getElementById('taskInput');
+            const taskDate = document.getElementById('taskDate');
+            const prioritySelect = document.getElementById('prioritySelect');
+            const difficultySelect = document.getElementById('difficultySelect');
+            const taskNotes = document.getElementById('taskNotes');
+            const taskText = taskInput.value.trim();
+            const dueDate = taskDate.value;
+            const priority = prioritySelect.value;
+            const difficulty = parseInt(difficultySelect.value);
+            const notes = taskNotes.value.trim();
+            
+            if (!taskText) {
+                alert('Введіть завдання');
+                return;
+            }
+            
+            if (!subjects[currentSubject]) {
+                subjects[currentSubject] = [];
+            }
+            
+            subjects[currentSubject].push({
+                text: taskText,
+                date: dueDate,
+                priority: priority,
+                difficulty: difficulty,
+                notes: notes,
+                completed: false,
+                id: Date.now(),
+                completedDate: null
+            });
+            
+            taskInput.value = '';
+            taskDate.value = '';
+            prioritySelect.value = 'medium';
+            difficultySelect.value = '2';
+            taskNotes.value = '';
+            renderTasks();
+            updateStats();
+            saveToStorage();
+            showNotification('Задание добавлено! ✅');
+        }
+
+        // показывает временное уведомление пользователю
+        function showNotification(message) {
+            const notif = document.createElement('div');
+            notif.className = 'notification';
+            notif.textContent = message;
+            document.body.appendChild(notif);
+            setTimeout(() => notif.remove(), 3000);
+        }
+
+        // применение фильтра задач по выбранной категории
+        function filterTasks() {
+            currentFilter = document.getElementById('filterSelect').value;
+            renderTasks();
+        }
+
+        // переключение между вкладками "Активні", "Виконані", "Предмети" и "Календар"
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            
+            const activeTabButton = document.querySelector(`.tab[data-tab="${tab}"]`);
+            if (activeTabButton) activeTabButton.classList.add('active');
+            const activeTabContent = document.getElementById(`${tab}Tab`);
+            if (activeTabContent) activeTabContent.classList.add('active');
+
+            if (tab === 'calendar') {
+                renderCalendar();
+            } else if (tab === 'subjects') {
+                renderSubjectsWithTasks();
+            }
+        }
+
+        // выбор предмета по имени и обновление интерфейса
+        function selectSubjectByName(subjectName) {
+            const element = Array.from(document.querySelectorAll('.subject-item')).find(item => item.textContent.trim() === subjectName);
+            if (element) {
+                selectSubject(element, subjectName);
+            } else {
+                currentSubject = subjectName;
+                document.getElementById('currentSubject').textContent = subjectName;
+                renderSubjects();
+                renderTasks();
+            }
+        }
+
+        // отображение списка предметов, в которых есть активные задачи
+        function renderSubjectsWithTasks() {
+            const list = document.getElementById('subjectsWithTasksList');
+            const emptyMessage = document.getElementById('noSubjectsWithTasks');
+            list.innerHTML = '';
+
+            const subjectsWithTasks = Object.keys(subjects).filter(subject => {
+                if (!Array.isArray(subjects[subject]) || subjects[subject].length === 0) return false;
+                const activeCount = subjects[subject].filter(task => !task.completed).length;
+                return activeCount > 0;
+            });
+
+            if (subjectsWithTasks.length === 0) {
+                emptyMessage.style.display = 'block';
+                return;
+            }
+
+            emptyMessage.style.display = 'none';
+            subjectsWithTasks.forEach(subjectName => {
+                const activeCount = subjects[subjectName].filter(task => !task.completed).length;
+                const li = document.createElement('li');
+                li.className = 'subject-summary-item';
+                li.innerHTML = `
+                    <span class="subject-summary-name">${subjectName}</span>
+                    <span class="subject-summary-count">${activeCount} ${activeCount === 1 ? 'активне завдання' : 'активних завдань'}</span>
+                `;
+                li.onclick = () => {
+                    switchTab('active');
+                    selectSubjectByName(subjectName);
+                };
+                list.appendChild(li);
+            });
+        }
+
+        // рендер активных и завершённых задач для текущего предмета
+        function renderTasks() {
+            const taskList = document.getElementById('taskList');
+            const completedList = document.getElementById('completedList');
+            const emptyMessage = document.getElementById('emptyMessage');
+            const emptyCompletedMessage = document.getElementById('emptyCompletedMessage');
+            
+            taskList.innerHTML = '';
+            completedList.innerHTML = '';
+            
+            const tasks = subjects[currentSubject] || [];
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            let activeTasks = [];
+            let completedTasks = [];
+            
+            tasks.forEach(task => {
+                if (!task.text.toLowerCase().includes(searchTerm)) return;
+                
+                if (task.completed) {
+                    completedTasks.push(task);
+                } else {
+                    activeTasks.push(task);
+                }
+            });
+
+            activeTasks = activeTasks.filter(task => {
+                if (currentFilter === 'high') return task.priority === 'high';
+                return true;
+            });
+
+            emptyMessage.style.display = activeTasks.length === 0 ? 'block' : 'none';
+            emptyCompletedMessage.style.display = completedTasks.length === 0 ? 'block' : 'none';
+
+            activeTasks.forEach(task => {
+                taskList.appendChild(createTaskElement(task));
+            });
+
+            completedTasks.forEach(task => {
+                completedList.appendChild(createTaskElement(task));
+            });
+        }
+
+        // создание HTML-элемента для одной задачи
+        function createTaskElement(task) {
+            const li = document.createElement('li');
+            li.className = 'task-item';
+            
+            if (task.priority === 'high') li.classList.add('priority-high');
+            if (task.priority === 'medium') li.classList.add('priority-medium');
+            if (task.priority === 'low') li.classList.add('priority-low');
+            
+            let difficultyText = '';
+            if (task.difficulty === 1) difficultyText = 'Легко';
+            else if (task.difficulty === 2) difficultyText = 'Среднє';
+            else if (task.difficulty === 3) difficultyText = 'Складно';
+            else if (task.difficulty === 4) difficultyText = 'Дуже складно';
+            else if (task.difficulty === 5) difficultyText = 'Екстра';
+            
+            let priorityText = '';
+            if (task.priority === 'high') priorityText = 'Високий';
+            else if (task.priority === 'medium') priorityText = 'Середній';
+            else if (task.priority === 'low') priorityText = 'Низький';
+            
+            const dateStr = task.date ? new Date(task.date).toLocaleDateString('ru-RU') : '';
+            
+            li.innerHTML = `
+                <input type="checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask(${task.id})">
+                <div class="task-content">
+                    <span class="task-text ${task.completed ? 'completed' : ''}">${task.text}</span>
+                    <div class="task-meta">
+                        ${task.date ? `<span class="task-date">${dateStr}</span>` : ''}
+                        <span class="task-priority">Пріоритет: ${priorityText}</span>
+                        <span class="task-difficulty">Складність: ${difficultyText}</span>
+                    </div>
+                    ${task.notes ? `<div class="task-notes">Замітка: ${task.notes}</div>` : ''}
+                </div>
+                <button class="delete-btn" onclick="deleteTask(${task.id})">🗑️</button>
+            `;
+            
+            return li;
+        }
+
+        // переключение состояния задачи между активной и выполненной
+        function toggleTask(taskId) {
+            const task = subjects[currentSubject].find(t => t.id === taskId);
+            if (task) {
+                task.completed = !task.completed;
+                task.completedDate = task.completed ? new Date().toISOString() : null;
+                renderTasks();
+                updateStats();
+                saveToStorage();
+            }
+        }
+
+        // удаление задачи из текущего предмета
+        function deleteTask(taskId) {
+            subjects[currentSubject] = subjects[currentSubject].filter(t => t.id !== taskId);
+            renderTasks();
+            updateStats();
+            saveToStorage();
+        }
+
+        // обновление статистики задач (всего, выполнено, процент)
+        function updateStats() {
+            let totalTasks = 0;
+            let completedTasks = 0;
+            
+            for (let subject in subjects) {
+                subjects[subject].forEach(task => {
+                    totalTasks++;
+                    if (task.completed) completedTasks++;
+                });
+            }
+            
+            document.getElementById('totalTasks').textContent = totalTasks;
+            document.getElementById('completedTasks').textContent = completedTasks;
+            document.getElementById('completionPercent').textContent = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) + '%' : '0%';
+        }
+
+        // рендер календаря с задачами и заметками на месяц
+        function renderCalendar() {
+            const calendar = document.getElementById('calendar');
+            calendar.innerHTML = '<p>Календар завантажується...</p>';
+
+            if (calendarMonth === null || calendarYear === null) {
+                setDefaultCalendar();
+            }
+            const firstDay = new Date(calendarYear, calendarMonth, 1);
+            const lastDay = new Date(calendarYear, calendarMonth + 1, 0);
+            const todayIso = new Date().toISOString().split('T')[0];
+            const selected = selectedDate || todayIso;
+
+            let html = `<div class="calendar">
+                <div class="calendar-controls">
+                    <button type="button" onclick="changeCalendarMonth(-1)">←</button>
+                    <div class="calendar-title">${firstDay.toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' })}</div>
+                    <button type="button" onclick="changeCalendarMonth(1)">→</button>
+                </div>
+                <div class="calendar-info">Вибрано: ${selected === todayIso ? 'Сьогодні, ' : ''}${selected}</div>
+                <div class="calendar-grid">`;
+
+            const daysOfWeek = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Нд'];
+            daysOfWeek.forEach(day => html += `<div class="calendar-header">${day}</div>`);
+
+            const offset = (firstDay.getDay() + 6) % 7;
+            for (let i = 0; i < offset; i++) {
+                html += '<div class="calendar-empty"></div>';
+            }
+
+            for (let day = 1; day <= lastDay.getDate(); day++) {
+                const date = `${calendarYear}-${String(calendarMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                let count = 0;
+                for (let subject in subjects) {
+                    count += subjects[subject].filter(t => t.date === date && !t.completed).length;
+                }
+                const noteText = calendarNotes[date] || '';
+                const notePreview = noteText ? noteText.slice(0, 22) + (noteText.length > 22 ? '…' : '') : '';
+                const hasNote = !!noteText;
+                const isToday = date === todayIso;
+                const isSelected = date === selected;
+                html += `<button type="button" class="calendar-day ${count > 0 ? 'has-tasks' : ''} ${hasNote ? 'has-note' : ''} ${isToday ? 'today' : ''} ${isSelected ? 'active' : ''}" onclick="selectCalendarDay('${date}')">
+                    <span>${day}</span>${count > 0 ? `<small>+${count}</small>` : ''}${hasNote ? `<div class="calendar-day-note">${notePreview}</div>` : ''}
+                </button>`;
+            }
+
+            html += '</div></div>';
+            calendar.innerHTML = html;
+            updateCalendarTaskInfo();
+            updateCalendarNotePanel();
+        }
+
+        // переключение месяца календаря вперед или назад
+        function changeCalendarMonth(delta) {
+            calendarMonth += delta;
+            if (calendarMonth < 0) {
+                calendarMonth = 11;
+                calendarYear -= 1;
+            } else if (calendarMonth > 11) {
+                calendarMonth = 0;
+                calendarYear += 1;
+            }
+            renderCalendar();
+        }
+
+        // выбор дня в календаре и установка даты по умолчанию для задачи
+        function selectCalendarDay(dateStr) {
+            selectedDate = dateStr;
+            const dateInput = document.getElementById('taskDate');
+            if (dateInput) {
+                dateInput.value = dateStr;
+            }
+            renderCalendar();
+        }
+
+        // обновление информации о количестве задач на выбранный день календаря
+        function updateCalendarTaskInfo() {
+            const info = document.querySelector('.calendar-selected-tasks');
+            if (!info) return;
+            const selected = selectedDate || new Date().toISOString().split('T')[0];
+            let count = 0;
+            for (let subject in subjects) {
+                count += subjects[subject].filter(t => t.date === selected && !t.completed).length;
+            }
+            info.textContent = count > 0 ? `Завдань на день: ${count}` : 'Немає завдань на цей день';
+        }
+
+        // сохранение данных предметов и задач в localStorage для пользователя
+        function saveToStorage() {
+            if (currentUserKey) {
+                localStorage.setItem('plannerSubjects_' + currentUserKey, JSON.stringify(subjects));
+            } else {
+                localStorage.setItem('plannerSubjects', JSON.stringify(subjects));
+            }
+        }
+
+        // одноразовая нормализация заметок (перевести все существующие заметки в localStorage в нижний регистр)
+        function normalizeAllNotes() {
+            // нормализовать заметки в задачах
+            for (let subject in subjects) {
+                if (!Array.isArray(subjects[subject])) continue;
+                subjects[subject] = subjects[subject].map(task => {
+                    if (task && task.notes) task.notes = String(task.notes).toLowerCase();
+                    return task;
+                });
+            }
+
+            // нормализовать заметки календаря
+            for (let day in calendarNotes) {
+                if (calendarNotes[day]) calendarNotes[day] = String(calendarNotes[day]).toLowerCase();
+            }
+
+            // сохранить изменения
+            saveToStorage();
+            saveCalendarNotes();
+        }
+
+        // миграция старых названий предметов на новые украинские названия
+        function migrateSubjectNames(subjects) {
+            const nameMap = {
+                'Физика': 'Фізика',
+                'Химия': 'Хімія',
+                'Информатика': 'Інформатика',
+                'Физра': 'Фізкультура',
+                'Економика': 'Економіка',
+                'География': 'Географія',
+                'Биология': 'Біологія',
+                'Технология': 'Технологія',
+                'Основи здоровья': 'Основи здороввя',
+                'Геометрия': 'Геометрія',
+                'История': 'Історія',
+                'Зарубежка': 'Зарубіжна література'
+            };
+            
+            const migrated = {};
+            for (let oldName in subjects) {
+                const newName = nameMap[oldName] || oldName;
+                migrated[newName] = subjects[oldName];
+            }
+            return migrated;
+        }
+
+        // загрузка данных предметов и задач из localStorage с учётом пользователя
+        function loadFromStorage() {
+            let storageKey = 'plannerSubjects';
+            if (currentUserKey) {
+                storageKey = 'plannerSubjects_' + currentUserKey;
+            }
+            
+            let stored = localStorage.getItem(storageKey);
+            if (!stored && currentUser) {
+                const alternateKey = 'plannerSubjects_' + currentUser;
+                stored = localStorage.getItem(alternateKey);
+                if (stored) {
+                    localStorage.setItem(storageKey, stored);
+                }
+            }
+            if (stored) {
+                let loaded = JSON.parse(stored);
+                loaded = migrateSubjectNames(loaded);
+                for (let subject in loaded) {
+                    subjects[subject] = loaded[subject];
+                }
+                if (currentUserKey) {
+                    localStorage.setItem(storageKey, JSON.stringify(loaded));
+                }
+            } else {
+                const defaultSubjects = ['Алгебра', 'Укр мова', 'Англ мова', 'Фізика', 'Хімія', 'Інформатика', 'Фізкультура', 'Економіка', 'Географія', 'Зарубіжна література', 'Біологія', 'Правознавство', 'Мистецтво', 'ОДД', 'Укр література', 'Технологія', 'Основи податків', 'Основи здороввя', 'Геометрія', 'Історія', 'STEM', 'Зарубережна література'];
+                defaultSubjects.forEach(subject => subjects[subject] = []);
+            }
+        }
+
+        // # старт, когда страница загрузилась
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
+
